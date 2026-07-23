@@ -7,9 +7,14 @@ private:
     Camera3D camera;
     std::vector<Vector2> background_stars;
     float cameraDistance;
+    float cameraAngleX;
+    float cameraAngleY;
+
+    float animated_radius;
+    float accretion_rotation;
 
     void draw_background();
-    void draw_star(float radius, double mass, bool is_black_hole);
+    void draw_star(float target_radius, double mass, bool is_black_hole);
     void draw_ui(double density, double radius, double mass, bool is_black_hole);
 
 public:
@@ -17,6 +22,6 @@ public:
     ~StarRenderer();
 
     void update_input();
-    void render_frame(double density_multiplier, double display_radius, double mass_solar, bool is_black_hole);
+    void render_frame(double density_multiplier, double target_radius, double mass_solar, bool is_black_hole);
     bool should_close() const;
 };
