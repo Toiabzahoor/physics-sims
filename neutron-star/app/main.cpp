@@ -27,39 +27,40 @@ std::pair<double, double> calculate_star(double central_density, const TOVSystem
 }
 
 int main() {
-    // 1. Init Physics Engine
     PolytropicEoS eos(0.025, 2.0);
     TOVSystem tov(eos);
 
-    // 2. Init Graphics Engine
-    StarRenderer renderer(1280, 720, "Neutron Star Simulation (Modular)");
+    StarRenderer renderer(1600, 900, "Neutron Star Simulation");
 
     double density_multiplier = 2.0; 
     auto [tov_radius, mass_solar] = calculate_star(Constants::rho_nuc_si * density_multiplier, tov, eos);
 
-    // 3. Main Loop
+    double critical_density_multiplier = 0.0;
+
     while (!renderer.should_close()) {
         
-        // Handle logical input
         bool physics_changed = false;
-        if (IsKeyDown(KEY_UP)) { density_multiplier += 0.05; physics_changed = true; }
-        if (IsKeyDown(KEY_DOWN)) { density_multiplier -= 0.05; physics_changed = true; }
+        
+        // Physics mapped to W and S
+        if (IsKeyDown(KEY_W)) { density_multiplier += 0.05; physics_changed = true; }
+        if (IsKeyDown(KEY_S)) { density_multiplier -= 0.05; physics_changed = true; }
         if (density_multiplier < 0.1) density_multiplier = 0.1;
 
-        // Update Physics
         if (physics_changed) {
             auto result = calculate_star(Constants::rho_nuc_si * density_multiplier, tov, eos);
             tov_radius = result.first;
             mass_solar = result.second;
+
+            if (mass_solar > 2.1 && critical_density_multiplier == 0.0) {
+                critical_density_multiplier = density_multiplier;
+            }
         }
 
-        // Determine State
-        bool is_collapsed = BlackHole::is_collapsed(mass_solar);
-        double display_radius = is_collapsed ? BlackHole::get_schwarzschild_radius(mass_solar) : tov_radius;
+        bool is_black_hole = (critical_density_multiplier > 0.0 && density_multiplier >= critical_density_multiplier);
+        double display_radius = is_black_hole ? BlackHole::get_schwarzschild_radius(mass_solar) : tov_radius;
 
-        // Update Graphics
         renderer.update_input();
-        renderer.render_frame(density_multiplier, display_radius, mass_solar, is_collapsed);
+        renderer.render_frame(density_multiplier, display_radius, mass_solar, is_black_hole);
     }
 
     return 0;
