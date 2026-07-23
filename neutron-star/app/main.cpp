@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include "raylib.h"
 #include "../include/constants.hpp"
 #include "../include/eos.hpp"
@@ -10,6 +11,7 @@
 
 std::pair<double, double> calculate_star(double central_density, const TOVSystem& tov, const EquationOfState& eos) {
     double central_pressure = eos.returnPressure(central_density);
+    
     std::vector<double> y = {central_pressure, 0.0}; 
     double r = 1.0; 
     double dr = 10.0;
@@ -27,12 +29,13 @@ std::pair<double, double> calculate_star(double central_density, const TOVSystem
 }
 
 int main() {
+    // Reverted to the stable physics that actually produce a visible star
     PolytropicEoS eos(0.025, 2.0);
     TOVSystem tov(eos);
 
     StarRenderer renderer(1600, 900, "Neutron Star Simulation");
 
-    double density_multiplier = 2.0; 
+    double density_multiplier = 1.5; 
     auto [tov_radius, mass_solar] = calculate_star(Constants::rho_nuc_si * density_multiplier, tov, eos);
 
     double critical_density_multiplier = 0.0;
@@ -41,16 +44,19 @@ int main() {
         
         bool physics_changed = false;
         
-        // Physics mapped to W and S
         if (IsKeyDown(KEY_W)) { density_multiplier += 0.05; physics_changed = true; }
         if (IsKeyDown(KEY_S)) { density_multiplier -= 0.05; physics_changed = true; }
         if (density_multiplier < 0.1) density_multiplier = 0.1;
 
         if (physics_changed) {
             auto result = calculate_star(Constants::rho_nuc_si * density_multiplier, tov, eos);
-            tov_radius = result.first;
-            mass_solar = result.second;
+            
+            if (!std::isnan(result.first) && !std::isnan(result.second)) {
+                tov_radius = result.first;
+                mass_solar = result.second;
+            }
 
+            // The TOV limit for this specific EoS is ~2.1
             if (mass_solar > 2.1 && critical_density_multiplier == 0.0) {
                 critical_density_multiplier = density_multiplier;
             }

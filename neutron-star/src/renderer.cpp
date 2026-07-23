@@ -36,9 +36,12 @@ bool StarRenderer::should_close() const {
 void StarRenderer::update_input() {
     float wheel = GetMouseWheelMove();
     if (wheel != 0) {
-        cameraDistance -= wheel * 3.0f;
-        if (cameraDistance < 10.0f) cameraDistance = 10.0f;
-        if (cameraDistance > 100.0f) cameraDistance = 100.0f;
+        // Proportional zoom: Faster when far away, slower when close
+        cameraDistance -= wheel * (cameraDistance * 0.1f);
+        
+        // Massive bounds: Allow zooming from 2km away to 1000km away
+        if (cameraDistance < 2.0f) cameraDistance = 2.0f;
+        if (cameraDistance > 1000.0f) cameraDistance = 1000.0f;
     }
 
     float rotationSpeed = 0.03f;
