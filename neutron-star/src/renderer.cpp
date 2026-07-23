@@ -1,80 +1,9 @@
 #include "../include/renderer.hpp"
 #include "../include/blackhole.hpp"
+#include "rlgl.h"
 #include "raymath.h" 
 #include <string>
 #include <cmath>
-
-const char* bh_shader_code = R"(
-#version 330
-
-out vec4 finalColor;
-
-uniform vec2 resolution;
-uniform vec3 camPos;
-uniform vec3 camDir;
-uniform vec3 camUp;
-uniform vec3 camRight;
-uniform float rs;
-uniform float time;
-
-void main() {
-    vec2 uv = (gl_FragCoord.xy / resolution.xy - 0.5) * 2.0;
-    uv.x *= resolution.x / resolution.y;
-    
-    vec3 rayDir = normalize(camDir + camRight * uv.x + camUp * uv.y);
-    vec3 p = camPos;
-    vec3 v = rayDir;
-    
-    vec3 col = vec3(0.0);
-    float accumulated_density = 0.0;
-    
-    for (int i = 0; i < 400; i++) {
-        float r = length(p);
-        
-        if (r < rs) {
-            break;
-        }
-        if (r > max(2000.0, length(camPos) * 1.5)) {
-            break;
-        }
-        
-        float dt = max(r * 0.02, rs * 0.01); 
-        
-        vec3 gravity = -p * (1.5 * rs / max(r * r * r, 0.001));
-        v = normalize(v + gravity * dt);
-        p += v * dt;
-        
-        if (abs(p.y) < (rs * 0.1 + dt * 0.5) && r > rs * 1.0 && r < rs * 12.0) {
-            float isco = rs * 3.0;
-            float distNorm = r / isco;
-            
-            float temp = 1.0 / (distNorm * distNorm);
-            if (r < isco) temp *= max((r - rs) / (isco - rs), 0.0); 
-            
-            vec3 orbit_vel = normalize(vec3(-p.z, 0.0, p.x));
-            float doppler = 1.0 + dot(orbit_vel, v) * 0.8;
-            
-            vec3 emission = vec3(1.0, 0.3, 0.05) * temp * doppler;
-            float heat_shift = clamp((temp - 0.8) * 1.5, 0.0, 1.0);
-            emission = mix(emission, vec3(0.8, 0.9, 1.0), heat_shift); 
-            
-            col += emission * dt * 0.2;
-            accumulated_density += 0.1 * dt;
-            
-            if (accumulated_density >= 1.0) break;
-        }
-    }
-    
-    if (accumulated_density < 1.0) {
-        float star = fract(sin(dot(v.xy, vec2(12.9898, 78.233))) * 43758.5453);
-        if (star > 0.995) col += vec3(1.0) * (1.0 - accumulated_density);
-    }
-    
-    col = vec3(1.0) - exp(-col * 1.5);
-    
-    finalColor = vec4(col, 1.0);
-}
-)";
 
 StarRenderer::StarRenderer(int width, int height, const char* title) {
     SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);
@@ -90,21 +19,7 @@ StarRenderer::StarRenderer(int width, int height, const char* title) {
     cameraAngleX = 0.785f;
     cameraAngleY = 0.35f;
     animated_radius = 0.0f;
-    
-    for(int i = 0; i < 2000; i++) {
-        float u = (float)GetRandomValue(0, 1000) / 1000.0f;
-        float v = (float)GetRandomValue(0, 1000) / 1000.0f;
-        float theta = 2.0f * PI * u;
-        float phi = acosf(2.0f * v - 1.0f); 
-        float r = 800.0f; 
-        
-        StarData star;
-        star.position = { r * sinf(phi) * cosf(theta), r * sinf(phi) * sinf(theta), r * cosf(phi) };
-        star.brightness = (float)GetRandomValue(40, 100) / 100.0f;
-        background_stars.push_back(star);
-    }
 
-    // 2. Neutron Star Texture & Model
     Image noise = GenImagePerlinNoise(512, 512, 0, 0, 8.0f);
     ImageColorTint(&noise, (Color){ 220, 220, 255, 255 }); 
     starTexture = LoadTextureFromImage(noise);
@@ -114,7 +29,7 @@ StarRenderer::StarRenderer(int width, int height, const char* title) {
     starModel = LoadModelFromMesh(sphereMesh);
     starModel.materials[0].maps[MATERIAL_MAP_ALBEDO].texture = starTexture;
 
-    bhShader = LoadShaderFromMemory(nullptr, bh_shader_code);
+    bhShader = LoadShaderFromMemory(nullptr, BlackHole::bh_shader_code);
     resLoc = GetShaderLocation(bhShader, "resolution");
     camPosLoc = GetShaderLocation(bhShader, "camPos");
     camDirLoc = GetShaderLocation(bhShader, "camDir");
@@ -167,16 +82,6 @@ void StarRenderer::update_input(StarPhysics& physics) {
     camera.position.y = cameraDistance * sinf(cameraAngleY);
 }
 
-void StarRenderer::draw_background() {
-    ClearBackground((Color){ 2, 2, 8, 255 }); 
-}
-
-void StarRenderer::draw_stars_3d() {
-    for(auto& star : background_stars) {
-        DrawCube(star.position, 2.0f, 2.0f, 2.0f, Fade(WHITE, star.brightness));
-    }
-}
-
 void StarRenderer::draw_neutron_star(double mass, const StarPhysics& physics) {
     Color coreColor = RAYWHITE;
     Color glowColor = SKYBLUE;
@@ -199,7 +104,7 @@ void StarRenderer::draw_neutron_star(double mass, const StarPhysics& physics) {
     EndBlendMode();
 }
 
-void StarRenderer::draw_black_hole(float rs) {
+void StarRenderer::draw_shader_background(float rs) {
     Vector3 camPos = camera.position;
     Vector3 camDir = Vector3Normalize(Vector3Subtract(camera.target, camera.position));
     Vector3 camRight = Vector3Normalize(Vector3CrossProduct(camDir, camera.up));
@@ -240,29 +145,47 @@ void StarRenderer::draw_ui(double density, double radius, double mass, bool is_b
 }
 
 void StarRenderer::render_frame(double density_multiplier, double target_radius, double mass_solar, bool is_black_hole, const StarPhysics& physics) {
-    if (animated_radius == 0.0f) animated_radius = target_radius;
+    static BlackHole::Visuals bh_visuals; 
+    static float animated_rs = 0.0f;
+    static float disk_alpha = 0.0f;
+    
+    if (animated_radius == 0.0f && !is_black_hole) animated_radius = target_radius;
 
-    if (!is_black_hole) {
-        if (!physics.is_paused()) {
+    double core_mass = mass_solar * 0.80; 
+    float target_rs = (float)BlackHole::get_schwarzschild_radius(core_mass);
+
+    if (!physics.is_paused()) {
+        if (is_black_hole) {
+            bh_visuals.init();
+            bh_visuals.update(GetFrameTime(), animated_rs);
+            
+            animated_radius += (0.0f - animated_radius) * 0.1f;
+            animated_rs += (target_rs - animated_rs) * 0.05f;  
+            disk_alpha += (1.0f - disk_alpha) * 0.02f;         
+        } else {
             animated_radius += (target_radius - animated_radius) * 0.2f;
+            animated_rs += (0.0f - animated_rs) * 0.1f;
+            disk_alpha += (0.0f - disk_alpha) * 0.1f;
         }
-
-        BeginDrawing();
-        draw_background();
-        BeginMode3D(camera);
-        draw_stars_3d();
-        draw_neutron_star(mass_solar, physics);
-        EndMode3D();
-        draw_ui(density_multiplier, target_radius, mass_solar, is_black_hole, physics);
-        EndDrawing();
-    } else {
-        double core_mass = mass_solar * 0.80; 
-        float r_s = (float)BlackHole::get_schwarzschild_radius(core_mass);
-
-        BeginDrawing();
-        ClearBackground(BLACK); 
-        draw_black_hole(r_s);
-        draw_ui(density_multiplier, target_radius, mass_solar, is_black_hole, physics);
-        EndDrawing();
     }
+
+    BeginDrawing();
+    ClearBackground(BLACK); 
+    
+    draw_shader_background(animated_rs);
+    
+    BeginMode3D(camera);
+    
+    if (animated_radius > 0.1f) {
+        draw_neutron_star(mass_solar, physics);
+    }
+    
+    if (disk_alpha > 0.01f) {
+        bh_visuals.draw(animated_rs, camera, disk_alpha); 
+    }
+    
+    EndMode3D();
+    
+    draw_ui(density_multiplier, target_radius, mass_solar, is_black_hole, physics);
+    EndDrawing();
 }
