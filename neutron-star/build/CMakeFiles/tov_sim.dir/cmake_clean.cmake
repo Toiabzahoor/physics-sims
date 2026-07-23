@@ -1,13 +1,14 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/tov_sim.dir/app/main.cpp.o"
-  "CMakeFiles/tov_sim.dir/app/main.cpp.o.d"
-  "CMakeFiles/tov_sim.dir/src/eos.cpp.o"
-  "CMakeFiles/tov_sim.dir/src/eos.cpp.o.d"
-  "CMakeFiles/tov_sim.dir/src/rk4.cpp.o"
-  "CMakeFiles/tov_sim.dir/src/rk4.cpp.o.d"
-  "CMakeFiles/tov_sim.dir/src/tov.cpp.o"
-  "CMakeFiles/tov_sim.dir/src/tov.cpp.o.d"
-  "tov_sim"
+  "CMakeFiles/tov_sim.dir/app/main.cpp.obj"
+  "CMakeFiles/tov_sim.dir/app/main.cpp.obj.d"
+  "CMakeFiles/tov_sim.dir/src/eos.cpp.obj"
+  "CMakeFiles/tov_sim.dir/src/eos.cpp.obj.d"
+  "CMakeFiles/tov_sim.dir/src/rk4.cpp.obj"
+  "CMakeFiles/tov_sim.dir/src/rk4.cpp.obj.d"
+  "CMakeFiles/tov_sim.dir/src/tov.cpp.obj"
+  "CMakeFiles/tov_sim.dir/src/tov.cpp.obj.d"
+  "libtov_sim.dll.a"
+  "tov_sim.exe"
   "tov_sim.pdb"
 )
 

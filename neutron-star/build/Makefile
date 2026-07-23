@@ -65,6 +65,26 @@ CMAKE_BINARY_DIR = /workspaces/physics-sims/neutron-star/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target package
+package: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Run CPack packaging tool..."
+	/usr/bin/cpack --config ./CPackConfig.cmake
+.PHONY : package
+
+# Special rule for the target package
+package/fast: package
+.PHONY : package/fast
+
+# Special rule for the target package_source
+package_source:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Run CPack packaging tool for source..."
+	/usr/bin/cpack --config ./CPackSourceConfig.cmake /workspaces/physics-sims/neutron-star/build/CPackSourceConfig.cmake
+.PHONY : package_source
+
+# Special rule for the target package_source
+package_source/fast: package_source
+.PHONY : package_source/fast
+
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
@@ -84,6 +104,51 @@ rebuild_cache:
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 .PHONY : rebuild_cache/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+.PHONY : list_install_components/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -129,13 +194,65 @@ tov_sim/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/build
 .PHONY : tov_sim/fast
 
-app/main.o: app/main.cpp.o
-.PHONY : app/main.o
+#=============================================================================
+# Target rules for targets named uninstall
+
+# Build rule for target.
+uninstall: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uninstall
+.PHONY : uninstall
+
+# fast build rule for target.
+uninstall/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/raylib-build/CMakeFiles/uninstall.dir/build.make _deps/raylib-build/CMakeFiles/uninstall.dir/build
+.PHONY : uninstall/fast
+
+#=============================================================================
+# Target rules for targets named raylib
+
+# Build rule for target.
+raylib: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 raylib
+.PHONY : raylib
+
+# fast build rule for target.
+raylib/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/raylib-build/raylib/CMakeFiles/raylib.dir/build.make _deps/raylib-build/raylib/CMakeFiles/raylib.dir/build
+.PHONY : raylib/fast
+
+#=============================================================================
+# Target rules for targets named glfw
+
+# Build rule for target.
+glfw: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 glfw
+.PHONY : glfw
+
+# fast build rule for target.
+glfw/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/raylib-build/raylib/external/glfw/src/CMakeFiles/glfw.dir/build.make _deps/raylib-build/raylib/external/glfw/src/CMakeFiles/glfw.dir/build
+.PHONY : glfw/fast
+
+#=============================================================================
+# Target rules for targets named update_mappings
+
+# Build rule for target.
+update_mappings: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 update_mappings
+.PHONY : update_mappings
+
+# fast build rule for target.
+update_mappings/fast:
+	$(MAKE) $(MAKESILENT) -f _deps/raylib-build/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/build.make _deps/raylib-build/raylib/external/glfw/src/CMakeFiles/update_mappings.dir/build
+.PHONY : update_mappings/fast
+
+app/main.obj: app/main.cpp.obj
+.PHONY : app/main.obj
 
 # target to build an object file
-app/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/app/main.cpp.o
-.PHONY : app/main.cpp.o
+app/main.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/app/main.cpp.obj
+.PHONY : app/main.cpp.obj
 
 app/main.i: app/main.cpp.i
 .PHONY : app/main.i
@@ -153,13 +270,13 @@ app/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/app/main.cpp.s
 .PHONY : app/main.cpp.s
 
-src/eos.o: src/eos.cpp.o
-.PHONY : src/eos.o
+src/eos.obj: src/eos.cpp.obj
+.PHONY : src/eos.obj
 
 # target to build an object file
-src/eos.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/eos.cpp.o
-.PHONY : src/eos.cpp.o
+src/eos.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/eos.cpp.obj
+.PHONY : src/eos.cpp.obj
 
 src/eos.i: src/eos.cpp.i
 .PHONY : src/eos.i
@@ -177,13 +294,13 @@ src/eos.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/eos.cpp.s
 .PHONY : src/eos.cpp.s
 
-src/rk4.o: src/rk4.cpp.o
-.PHONY : src/rk4.o
+src/rk4.obj: src/rk4.cpp.obj
+.PHONY : src/rk4.obj
 
 # target to build an object file
-src/rk4.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/rk4.cpp.o
-.PHONY : src/rk4.cpp.o
+src/rk4.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/rk4.cpp.obj
+.PHONY : src/rk4.cpp.obj
 
 src/rk4.i: src/rk4.cpp.i
 .PHONY : src/rk4.i
@@ -201,13 +318,13 @@ src/rk4.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/rk4.cpp.s
 .PHONY : src/rk4.cpp.s
 
-src/tov.o: src/tov.cpp.o
-.PHONY : src/tov.o
+src/tov.obj: src/tov.cpp.obj
+.PHONY : src/tov.obj
 
 # target to build an object file
-src/tov.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/tov.cpp.o
-.PHONY : src/tov.cpp.o
+src/tov.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/tov.cpp.obj
+.PHONY : src/tov.cpp.obj
 
 src/tov.i: src/tov.cpp.i
 .PHONY : src/tov.i
@@ -232,18 +349,28 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... install"
+	@echo "... install/local"
+	@echo "... install/strip"
+	@echo "... list_install_components"
+	@echo "... package"
+	@echo "... package_source"
 	@echo "... rebuild_cache"
+	@echo "... uninstall"
+	@echo "... update_mappings"
+	@echo "... glfw"
+	@echo "... raylib"
 	@echo "... tov_sim"
-	@echo "... app/main.o"
+	@echo "... app/main.obj"
 	@echo "... app/main.i"
 	@echo "... app/main.s"
-	@echo "... src/eos.o"
+	@echo "... src/eos.obj"
 	@echo "... src/eos.i"
 	@echo "... src/eos.s"
-	@echo "... src/rk4.o"
+	@echo "... src/rk4.obj"
 	@echo "... src/rk4.i"
 	@echo "... src/rk4.s"
-	@echo "... src/tov.o"
+	@echo "... src/tov.obj"
 	@echo "... src/tov.i"
 	@echo "... src/tov.s"
 .PHONY : help

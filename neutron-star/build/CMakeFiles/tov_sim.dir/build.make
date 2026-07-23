@@ -69,83 +69,91 @@ include CMakeFiles/tov_sim.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/tov_sim.dir/flags.make
 
-CMakeFiles/tov_sim.dir/app/main.cpp.o: CMakeFiles/tov_sim.dir/flags.make
-CMakeFiles/tov_sim.dir/app/main.cpp.o: /workspaces/physics-sims/neutron-star/app/main.cpp
-CMakeFiles/tov_sim.dir/app/main.cpp.o: CMakeFiles/tov_sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/tov_sim.dir/app/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/app/main.cpp.o -MF CMakeFiles/tov_sim.dir/app/main.cpp.o.d -o CMakeFiles/tov_sim.dir/app/main.cpp.o -c /workspaces/physics-sims/neutron-star/app/main.cpp
+CMakeFiles/tov_sim.dir/app/main.cpp.obj: CMakeFiles/tov_sim.dir/flags.make
+CMakeFiles/tov_sim.dir/app/main.cpp.obj: CMakeFiles/tov_sim.dir/includes_CXX.rsp
+CMakeFiles/tov_sim.dir/app/main.cpp.obj: /workspaces/physics-sims/neutron-star/app/main.cpp
+CMakeFiles/tov_sim.dir/app/main.cpp.obj: CMakeFiles/tov_sim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/tov_sim.dir/app/main.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/app/main.cpp.obj -MF CMakeFiles/tov_sim.dir/app/main.cpp.obj.d -o CMakeFiles/tov_sim.dir/app/main.cpp.obj -c /workspaces/physics-sims/neutron-star/app/main.cpp
 
 CMakeFiles/tov_sim.dir/app/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tov_sim.dir/app/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/app/main.cpp > CMakeFiles/tov_sim.dir/app/main.cpp.i
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/app/main.cpp > CMakeFiles/tov_sim.dir/app/main.cpp.i
 
 CMakeFiles/tov_sim.dir/app/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tov_sim.dir/app/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/app/main.cpp -o CMakeFiles/tov_sim.dir/app/main.cpp.s
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/app/main.cpp -o CMakeFiles/tov_sim.dir/app/main.cpp.s
 
-CMakeFiles/tov_sim.dir/src/eos.cpp.o: CMakeFiles/tov_sim.dir/flags.make
-CMakeFiles/tov_sim.dir/src/eos.cpp.o: /workspaces/physics-sims/neutron-star/src/eos.cpp
-CMakeFiles/tov_sim.dir/src/eos.cpp.o: CMakeFiles/tov_sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/tov_sim.dir/src/eos.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/eos.cpp.o -MF CMakeFiles/tov_sim.dir/src/eos.cpp.o.d -o CMakeFiles/tov_sim.dir/src/eos.cpp.o -c /workspaces/physics-sims/neutron-star/src/eos.cpp
+CMakeFiles/tov_sim.dir/src/eos.cpp.obj: CMakeFiles/tov_sim.dir/flags.make
+CMakeFiles/tov_sim.dir/src/eos.cpp.obj: CMakeFiles/tov_sim.dir/includes_CXX.rsp
+CMakeFiles/tov_sim.dir/src/eos.cpp.obj: /workspaces/physics-sims/neutron-star/src/eos.cpp
+CMakeFiles/tov_sim.dir/src/eos.cpp.obj: CMakeFiles/tov_sim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/tov_sim.dir/src/eos.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/eos.cpp.obj -MF CMakeFiles/tov_sim.dir/src/eos.cpp.obj.d -o CMakeFiles/tov_sim.dir/src/eos.cpp.obj -c /workspaces/physics-sims/neutron-star/src/eos.cpp
 
 CMakeFiles/tov_sim.dir/src/eos.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tov_sim.dir/src/eos.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/eos.cpp > CMakeFiles/tov_sim.dir/src/eos.cpp.i
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/eos.cpp > CMakeFiles/tov_sim.dir/src/eos.cpp.i
 
 CMakeFiles/tov_sim.dir/src/eos.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tov_sim.dir/src/eos.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/eos.cpp -o CMakeFiles/tov_sim.dir/src/eos.cpp.s
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/eos.cpp -o CMakeFiles/tov_sim.dir/src/eos.cpp.s
 
-CMakeFiles/tov_sim.dir/src/rk4.cpp.o: CMakeFiles/tov_sim.dir/flags.make
-CMakeFiles/tov_sim.dir/src/rk4.cpp.o: /workspaces/physics-sims/neutron-star/src/rk4.cpp
-CMakeFiles/tov_sim.dir/src/rk4.cpp.o: CMakeFiles/tov_sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/tov_sim.dir/src/rk4.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/rk4.cpp.o -MF CMakeFiles/tov_sim.dir/src/rk4.cpp.o.d -o CMakeFiles/tov_sim.dir/src/rk4.cpp.o -c /workspaces/physics-sims/neutron-star/src/rk4.cpp
+CMakeFiles/tov_sim.dir/src/rk4.cpp.obj: CMakeFiles/tov_sim.dir/flags.make
+CMakeFiles/tov_sim.dir/src/rk4.cpp.obj: CMakeFiles/tov_sim.dir/includes_CXX.rsp
+CMakeFiles/tov_sim.dir/src/rk4.cpp.obj: /workspaces/physics-sims/neutron-star/src/rk4.cpp
+CMakeFiles/tov_sim.dir/src/rk4.cpp.obj: CMakeFiles/tov_sim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/tov_sim.dir/src/rk4.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/rk4.cpp.obj -MF CMakeFiles/tov_sim.dir/src/rk4.cpp.obj.d -o CMakeFiles/tov_sim.dir/src/rk4.cpp.obj -c /workspaces/physics-sims/neutron-star/src/rk4.cpp
 
 CMakeFiles/tov_sim.dir/src/rk4.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tov_sim.dir/src/rk4.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/rk4.cpp > CMakeFiles/tov_sim.dir/src/rk4.cpp.i
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/rk4.cpp > CMakeFiles/tov_sim.dir/src/rk4.cpp.i
 
 CMakeFiles/tov_sim.dir/src/rk4.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tov_sim.dir/src/rk4.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/rk4.cpp -o CMakeFiles/tov_sim.dir/src/rk4.cpp.s
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/rk4.cpp -o CMakeFiles/tov_sim.dir/src/rk4.cpp.s
 
-CMakeFiles/tov_sim.dir/src/tov.cpp.o: CMakeFiles/tov_sim.dir/flags.make
-CMakeFiles/tov_sim.dir/src/tov.cpp.o: /workspaces/physics-sims/neutron-star/src/tov.cpp
-CMakeFiles/tov_sim.dir/src/tov.cpp.o: CMakeFiles/tov_sim.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/tov_sim.dir/src/tov.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/tov.cpp.o -MF CMakeFiles/tov_sim.dir/src/tov.cpp.o.d -o CMakeFiles/tov_sim.dir/src/tov.cpp.o -c /workspaces/physics-sims/neutron-star/src/tov.cpp
+CMakeFiles/tov_sim.dir/src/tov.cpp.obj: CMakeFiles/tov_sim.dir/flags.make
+CMakeFiles/tov_sim.dir/src/tov.cpp.obj: CMakeFiles/tov_sim.dir/includes_CXX.rsp
+CMakeFiles/tov_sim.dir/src/tov.cpp.obj: /workspaces/physics-sims/neutron-star/src/tov.cpp
+CMakeFiles/tov_sim.dir/src/tov.cpp.obj: CMakeFiles/tov_sim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/tov_sim.dir/src/tov.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/tov.cpp.obj -MF CMakeFiles/tov_sim.dir/src/tov.cpp.obj.d -o CMakeFiles/tov_sim.dir/src/tov.cpp.obj -c /workspaces/physics-sims/neutron-star/src/tov.cpp
 
 CMakeFiles/tov_sim.dir/src/tov.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tov_sim.dir/src/tov.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/tov.cpp > CMakeFiles/tov_sim.dir/src/tov.cpp.i
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/tov.cpp > CMakeFiles/tov_sim.dir/src/tov.cpp.i
 
 CMakeFiles/tov_sim.dir/src/tov.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tov_sim.dir/src/tov.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/tov.cpp -o CMakeFiles/tov_sim.dir/src/tov.cpp.s
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/tov.cpp -o CMakeFiles/tov_sim.dir/src/tov.cpp.s
 
 # Object files for target tov_sim
 tov_sim_OBJECTS = \
-"CMakeFiles/tov_sim.dir/app/main.cpp.o" \
-"CMakeFiles/tov_sim.dir/src/eos.cpp.o" \
-"CMakeFiles/tov_sim.dir/src/rk4.cpp.o" \
-"CMakeFiles/tov_sim.dir/src/tov.cpp.o"
+"CMakeFiles/tov_sim.dir/app/main.cpp.obj" \
+"CMakeFiles/tov_sim.dir/src/eos.cpp.obj" \
+"CMakeFiles/tov_sim.dir/src/rk4.cpp.obj" \
+"CMakeFiles/tov_sim.dir/src/tov.cpp.obj"
 
 # External object files for target tov_sim
 tov_sim_EXTERNAL_OBJECTS =
 
-tov_sim: CMakeFiles/tov_sim.dir/app/main.cpp.o
-tov_sim: CMakeFiles/tov_sim.dir/src/eos.cpp.o
-tov_sim: CMakeFiles/tov_sim.dir/src/rk4.cpp.o
-tov_sim: CMakeFiles/tov_sim.dir/src/tov.cpp.o
-tov_sim: CMakeFiles/tov_sim.dir/build.make
-tov_sim: CMakeFiles/tov_sim.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable tov_sim"
+tov_sim.exe: CMakeFiles/tov_sim.dir/app/main.cpp.obj
+tov_sim.exe: CMakeFiles/tov_sim.dir/src/eos.cpp.obj
+tov_sim.exe: CMakeFiles/tov_sim.dir/src/rk4.cpp.obj
+tov_sim.exe: CMakeFiles/tov_sim.dir/src/tov.cpp.obj
+tov_sim.exe: CMakeFiles/tov_sim.dir/build.make
+tov_sim.exe: _deps/raylib-build/raylib/libraylib.a
+tov_sim.exe: _deps/raylib-build/raylib/external/glfw/src/libglfw3.a
+tov_sim.exe: CMakeFiles/tov_sim.dir/linkLibs.rsp
+tov_sim.exe: CMakeFiles/tov_sim.dir/objects1.rsp
+tov_sim.exe: CMakeFiles/tov_sim.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable tov_sim.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tov_sim.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-CMakeFiles/tov_sim.dir/build: tov_sim
+CMakeFiles/tov_sim.dir/build: tov_sim.exe
 .PHONY : CMakeFiles/tov_sim.dir/build
 
 CMakeFiles/tov_sim.dir/clean:
