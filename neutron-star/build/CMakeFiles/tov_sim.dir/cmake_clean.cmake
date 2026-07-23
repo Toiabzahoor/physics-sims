@@ -1,8 +1,12 @@
 file(REMOVE_RECURSE
   "CMakeFiles/tov_sim.dir/app/main.cpp.obj"
   "CMakeFiles/tov_sim.dir/app/main.cpp.obj.d"
+  "CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj"
+  "CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj.d"
   "CMakeFiles/tov_sim.dir/src/eos.cpp.obj"
   "CMakeFiles/tov_sim.dir/src/eos.cpp.obj.d"
+  "CMakeFiles/tov_sim.dir/src/renderer.cpp.obj"
+  "CMakeFiles/tov_sim.dir/src/renderer.cpp.obj.d"
   "CMakeFiles/tov_sim.dir/src/rk4.cpp.obj"
   "CMakeFiles/tov_sim.dir/src/rk4.cpp.obj.d"
   "CMakeFiles/tov_sim.dir/src/tov.cpp.obj"

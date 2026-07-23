@@ -129,12 +129,44 @@ CMakeFiles/tov_sim.dir/src/tov.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tov_sim.dir/src/tov.cpp.s"
 	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/tov.cpp -o CMakeFiles/tov_sim.dir/src/tov.cpp.s
 
+CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj: CMakeFiles/tov_sim.dir/flags.make
+CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj: CMakeFiles/tov_sim.dir/includes_CXX.rsp
+CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj: /workspaces/physics-sims/neutron-star/src/blackhole.cpp
+CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj: CMakeFiles/tov_sim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj -MF CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj.d -o CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj -c /workspaces/physics-sims/neutron-star/src/blackhole.cpp
+
+CMakeFiles/tov_sim.dir/src/blackhole.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tov_sim.dir/src/blackhole.cpp.i"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/blackhole.cpp > CMakeFiles/tov_sim.dir/src/blackhole.cpp.i
+
+CMakeFiles/tov_sim.dir/src/blackhole.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tov_sim.dir/src/blackhole.cpp.s"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/blackhole.cpp -o CMakeFiles/tov_sim.dir/src/blackhole.cpp.s
+
+CMakeFiles/tov_sim.dir/src/renderer.cpp.obj: CMakeFiles/tov_sim.dir/flags.make
+CMakeFiles/tov_sim.dir/src/renderer.cpp.obj: CMakeFiles/tov_sim.dir/includes_CXX.rsp
+CMakeFiles/tov_sim.dir/src/renderer.cpp.obj: /workspaces/physics-sims/neutron-star/src/renderer.cpp
+CMakeFiles/tov_sim.dir/src/renderer.cpp.obj: CMakeFiles/tov_sim.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/tov_sim.dir/src/renderer.cpp.obj"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/tov_sim.dir/src/renderer.cpp.obj -MF CMakeFiles/tov_sim.dir/src/renderer.cpp.obj.d -o CMakeFiles/tov_sim.dir/src/renderer.cpp.obj -c /workspaces/physics-sims/neutron-star/src/renderer.cpp
+
+CMakeFiles/tov_sim.dir/src/renderer.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/tov_sim.dir/src/renderer.cpp.i"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /workspaces/physics-sims/neutron-star/src/renderer.cpp > CMakeFiles/tov_sim.dir/src/renderer.cpp.i
+
+CMakeFiles/tov_sim.dir/src/renderer.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/tov_sim.dir/src/renderer.cpp.s"
+	/usr/bin/x86_64-w64-mingw32-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /workspaces/physics-sims/neutron-star/src/renderer.cpp -o CMakeFiles/tov_sim.dir/src/renderer.cpp.s
+
 # Object files for target tov_sim
 tov_sim_OBJECTS = \
 "CMakeFiles/tov_sim.dir/app/main.cpp.obj" \
 "CMakeFiles/tov_sim.dir/src/eos.cpp.obj" \
 "CMakeFiles/tov_sim.dir/src/rk4.cpp.obj" \
-"CMakeFiles/tov_sim.dir/src/tov.cpp.obj"
+"CMakeFiles/tov_sim.dir/src/tov.cpp.obj" \
+"CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj" \
+"CMakeFiles/tov_sim.dir/src/renderer.cpp.obj"
 
 # External object files for target tov_sim
 tov_sim_EXTERNAL_OBJECTS =
@@ -143,13 +175,15 @@ tov_sim.exe: CMakeFiles/tov_sim.dir/app/main.cpp.obj
 tov_sim.exe: CMakeFiles/tov_sim.dir/src/eos.cpp.obj
 tov_sim.exe: CMakeFiles/tov_sim.dir/src/rk4.cpp.obj
 tov_sim.exe: CMakeFiles/tov_sim.dir/src/tov.cpp.obj
+tov_sim.exe: CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj
+tov_sim.exe: CMakeFiles/tov_sim.dir/src/renderer.cpp.obj
 tov_sim.exe: CMakeFiles/tov_sim.dir/build.make
 tov_sim.exe: _deps/raylib-build/raylib/libraylib.a
 tov_sim.exe: _deps/raylib-build/raylib/external/glfw/src/libglfw3.a
 tov_sim.exe: CMakeFiles/tov_sim.dir/linkLibs.rsp
 tov_sim.exe: CMakeFiles/tov_sim.dir/objects1.rsp
 tov_sim.exe: CMakeFiles/tov_sim.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable tov_sim.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/workspaces/physics-sims/neutron-star/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable tov_sim.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/tov_sim.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

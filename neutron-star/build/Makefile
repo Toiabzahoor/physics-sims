@@ -270,6 +270,30 @@ app/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/app/main.cpp.s
 .PHONY : app/main.cpp.s
 
+src/blackhole.obj: src/blackhole.cpp.obj
+.PHONY : src/blackhole.obj
+
+# target to build an object file
+src/blackhole.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/blackhole.cpp.obj
+.PHONY : src/blackhole.cpp.obj
+
+src/blackhole.i: src/blackhole.cpp.i
+.PHONY : src/blackhole.i
+
+# target to preprocess a source file
+src/blackhole.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/blackhole.cpp.i
+.PHONY : src/blackhole.cpp.i
+
+src/blackhole.s: src/blackhole.cpp.s
+.PHONY : src/blackhole.s
+
+# target to generate assembly for a file
+src/blackhole.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/blackhole.cpp.s
+.PHONY : src/blackhole.cpp.s
+
 src/eos.obj: src/eos.cpp.obj
 .PHONY : src/eos.obj
 
@@ -293,6 +317,30 @@ src/eos.s: src/eos.cpp.s
 src/eos.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/eos.cpp.s
 .PHONY : src/eos.cpp.s
+
+src/renderer.obj: src/renderer.cpp.obj
+.PHONY : src/renderer.obj
+
+# target to build an object file
+src/renderer.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/renderer.cpp.obj
+.PHONY : src/renderer.cpp.obj
+
+src/renderer.i: src/renderer.cpp.i
+.PHONY : src/renderer.i
+
+# target to preprocess a source file
+src/renderer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/renderer.cpp.i
+.PHONY : src/renderer.cpp.i
+
+src/renderer.s: src/renderer.cpp.s
+.PHONY : src/renderer.s
+
+# target to generate assembly for a file
+src/renderer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/tov_sim.dir/build.make CMakeFiles/tov_sim.dir/src/renderer.cpp.s
+.PHONY : src/renderer.cpp.s
 
 src/rk4.obj: src/rk4.cpp.obj
 .PHONY : src/rk4.obj
@@ -364,9 +412,15 @@ help:
 	@echo "... app/main.obj"
 	@echo "... app/main.i"
 	@echo "... app/main.s"
+	@echo "... src/blackhole.obj"
+	@echo "... src/blackhole.i"
+	@echo "... src/blackhole.s"
 	@echo "... src/eos.obj"
 	@echo "... src/eos.i"
 	@echo "... src/eos.s"
+	@echo "... src/renderer.obj"
+	@echo "... src/renderer.i"
+	@echo "... src/renderer.s"
 	@echo "... src/rk4.obj"
 	@echo "... src/rk4.i"
 	@echo "... src/rk4.s"

@@ -18,6 +18,8 @@ add_executable(tov_sim
     src/eos.cpp 
     src/rk4.cpp 
     src/tov.cpp
+    src/blackhole.cpp
+    src/renderer.cpp
 )
 
 
