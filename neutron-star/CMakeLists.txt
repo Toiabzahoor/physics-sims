@@ -20,6 +20,7 @@ add_executable(tov_sim
     src/tov.cpp
     src/blackhole.cpp
     src/renderer.cpp
+    src/star_physics.cpp
 )
 
 
