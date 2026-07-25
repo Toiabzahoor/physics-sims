@@ -13,18 +13,19 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-add_executable(tov_sim 
-    app/main.cpp 
-    src/eos.cpp 
-    src/rk4.cpp 
-    src/tov.cpp
-    src/blackhole.cpp
-    src/renderer.cpp
-    src/star_physics.cpp
+add_executable(tov_sim
+     app/main.cpp
+     src/eos.cpp
+     src/rk4.cpp
+     src/tov.cpp
+     src/blackhole.cpp
+     src/renderer.cpp
+     src/star_physics.cpp
+     src/jets.cpp
 )
 
-
 target_link_libraries(tov_sim PRIVATE raylib)
+
 if(WIN32)
     target_link_options(tov_sim PRIVATE -static -static-libgcc -static-libstdc++)
 endif()

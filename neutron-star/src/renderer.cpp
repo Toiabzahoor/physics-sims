@@ -1,7 +1,7 @@
 #include "../include/renderer.hpp"
 #include "../include/blackhole.hpp"
 #include "rlgl.h"
-#include "raymath.h" 
+#include "raymath.h"
 #include <string>
 #include <cmath>
 
@@ -15,13 +15,13 @@ StarRenderer::StarRenderer(int width, int height, const char* title) {
     camera.fovy = 45.0f;
     camera.projection = CAMERA_PERSPECTIVE;
     
-    cameraDistance = 150.0f; 
+    cameraDistance = 150.0f;
     cameraAngleX = 0.785f;
     cameraAngleY = 0.35f;
     animated_radius = 0.0f;
 
     Image noise = GenImagePerlinNoise(512, 512, 0, 0, 8.0f);
-    ImageColorTint(&noise, (Color){ 220, 220, 255, 255 }); 
+    ImageColorTint(&noise, (Color){ 220, 220, 255, 255 });
     starTexture = LoadTextureFromImage(noise);
     UnloadImage(noise);
 
@@ -38,12 +38,14 @@ StarRenderer::StarRenderer(int width, int height, const char* title) {
     rsLoc = GetShaderLocation(bhShader, "rs");
     timeLoc = GetShaderLocation(bhShader, "time");
 
+    jets.init();
     SetTargetFPS(60);
 }
 
 StarRenderer::~StarRenderer() {
+    jets.cleanup();
     UnloadShader(bhShader);
-    UnloadTexture(starTexture); 
+    UnloadTexture(starTexture);
     UnloadModel(starModel);
     CloseWindow();
 }
@@ -61,25 +63,29 @@ void StarRenderer::update_input(StarPhysics& physics) {
         if (cameraDistance < 10.0f) cameraDistance = 10.0f;
         if (cameraDistance > 900.0f) cameraDistance = 900.0f;
     }
-    
+
     float rotationSpeed = 0.03f;
     if (IsKeyDown(KEY_LEFT)) cameraAngleX += rotationSpeed;
     if (IsKeyDown(KEY_RIGHT)) cameraAngleX -= rotationSpeed;
     if (IsKeyDown(KEY_UP)) cameraAngleY -= rotationSpeed;
     if (IsKeyDown(KEY_DOWN)) cameraAngleY += rotationSpeed;
-    
+
     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
         Vector2 delta = GetMouseDelta();
         cameraAngleX -= delta.x * 0.005f;
         cameraAngleY -= delta.y * 0.005f;
     }
-    
-    if (cameraAngleY > 1.5f) cameraAngleY = 1.5f;
-    if (cameraAngleY < -1.5f) cameraAngleY = -1.5f;
-    
+
+    // Calculate the camera position using spherical coordinates
     camera.position.x = cameraDistance * cosf(cameraAngleY) * cosf(cameraAngleX);
-    camera.position.z = cameraDistance * cosf(cameraAngleY) * sinf(cameraAngleX);
     camera.position.y = cameraDistance * sinf(cameraAngleY);
+    camera.position.z = cameraDistance * cosf(cameraAngleY) * sinf(cameraAngleX);
+
+    // Dynamically calculate the 'up' vector to prevent flipping at the poles
+    // This completely removes the need for clamping the viewing angle.
+    camera.up.x = -sinf(cameraAngleY) * cosf(cameraAngleX);
+    camera.up.y = cosf(cameraAngleY);
+    camera.up.z = -sinf(cameraAngleY) * sinf(cameraAngleX);
 }
 
 void StarRenderer::draw_neutron_star(double mass, const StarPhysics& physics) {
@@ -90,7 +96,18 @@ void StarRenderer::draw_neutron_star(double mass, const StarPhysics& physics) {
     if (mass > 1.9) { coreColor = ORANGE; glowColor = RED; }
     
     Vector3 scale = { animated_radius, animated_radius, animated_radius };
-    DrawModelEx(starModel, (Vector3){0,0,0}, (Vector3){0,1,0}, physics.get_spin_angle(), scale, coreColor);
+    Vector3 axis = physics.get_rotation_axis();
+
+    float angle = acosf(Vector3DotProduct({0.0f, 1.0f, 0.0f}, axis)) * RAD2DEG;
+    Vector3 cross = Vector3CrossProduct({0.0f, 1.0f, 0.0f}, axis);
+    Vector3 rotationAxis = Vector3Length(cross) > 0.001f ? Vector3Normalize(cross) : (Vector3){1.0f, 0.0f, 0.0f};
+
+    rlPushMatrix();
+    rlRotatef(angle, rotationAxis.x, rotationAxis.y, rotationAxis.z);
+    rlRotatef(physics.get_spin_angle(), 0.0f, 1.0f, 0.0f);
+    
+    DrawModelEx(starModel, (Vector3){0,0,0}, (Vector3){0,1,0}, 0.0f, scale, coreColor);
+    rlPopMatrix();
 
     float time = (float)GetTime();
     float pulse1 = 1.02f + 0.01f * sinf(time * 5.0f);
@@ -145,47 +162,48 @@ void StarRenderer::draw_ui(double density, double radius, double mass, bool is_b
 }
 
 void StarRenderer::render_frame(double density_multiplier, double target_radius, double mass_solar, bool is_black_hole, const StarPhysics& physics) {
-    static BlackHole::Visuals bh_visuals; 
+    static BlackHole::Visuals bh_visuals;
     static float animated_rs = 0.0f;
     static float disk_alpha = 0.0f;
     
     if (animated_radius == 0.0f && !is_black_hole) animated_radius = target_radius;
 
-    double core_mass = mass_solar * 0.80; 
+    double core_mass = mass_solar * 0.80;
     float target_rs = (float)BlackHole::get_schwarzschild_radius(core_mass);
 
     if (!physics.is_paused()) {
         if (is_black_hole) {
             bh_visuals.init();
             bh_visuals.update(GetFrameTime(), animated_rs);
-            
             animated_radius += (0.0f - animated_radius) * 0.1f;
-            animated_rs += (target_rs - animated_rs) * 0.05f;  
-            disk_alpha += (1.0f - disk_alpha) * 0.02f;         
+            animated_rs += (target_rs - animated_rs) * 0.05f;
+            disk_alpha += (1.0f - disk_alpha) * 0.02f;
         } else {
             animated_radius += (target_radius - animated_radius) * 0.2f;
             animated_rs += (0.0f - animated_rs) * 0.1f;
             disk_alpha += (0.0f - disk_alpha) * 0.1f;
+            
+            float escape_v = 80.0f * (float)(mass_solar / target_radius);
+            jets.update(GetFrameTime(), is_black_hole, physics.get_rotation_axis(), escape_v);
         }
     }
 
     BeginDrawing();
-    ClearBackground(BLACK); 
-    
+    ClearBackground(BLACK);
     draw_shader_background(animated_rs);
-    
+
     BeginMode3D(camera);
     
-    if (animated_radius > 0.1f) {
+    if (animated_radius > 0.1f && !is_black_hole) {
         draw_neutron_star(mass_solar, physics);
+        jets.draw(camera, 1.0f - disk_alpha);
     }
     
     if (disk_alpha > 0.01f) {
-        bh_visuals.draw(animated_rs, camera, disk_alpha); 
+        bh_visuals.draw(animated_rs, camera, disk_alpha);
     }
     
     EndMode3D();
-    
     draw_ui(density_multiplier, target_radius, mass_solar, is_black_hole, physics);
     EndDrawing();
 }

@@ -1,6 +1,8 @@
 #pragma once
+
 #include "raylib.h"
 #include "star_physics.hpp"
+#include "jets.hpp"
 
 class StarRenderer {
 private:
@@ -9,10 +11,13 @@ private:
     float cameraAngleX;
     float cameraAngleY;
     float animated_radius;
-    Model starModel;       
-    Texture2D starTexture; 
+
+    Model starModel;
+    Texture2D starTexture;
     Shader bhShader;
     int resLoc, camPosLoc, camDirLoc, camUpLoc, camRightLoc, rsLoc, timeLoc;
+    
+    PolarJets jets;
 
     void draw_neutron_star(double mass, const StarPhysics& physics);
     void draw_shader_background(float rs);

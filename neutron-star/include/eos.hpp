@@ -27,7 +27,7 @@ private:
     double Gamma_core;
     double rho_transition;
     double K_core; 
-
+    double a_core; 
 public:
     PiecewisePolytropicEoS(double k_crust, double gamma_crust, double gamma_core, double rho_trans);
     double returnPressure(double density) const override;
