@@ -14,9 +14,13 @@ private:
 
     Model starModel;
     Texture2D starTexture;
+
     Shader bhShader;
     int resLoc, camPosLoc, camDirLoc, camUpLoc, camRightLoc, rsLoc, timeLoc;
-    
+
+    Shader nsShader;
+    int viewPosLoc, poleAxisLoc, massLoc, radiusLoc, nsTimeLoc;
+
     PolarJets jets;
 
     void draw_neutron_star(double mass, const StarPhysics& physics);
