@@ -132,8 +132,8 @@ namespace BlackHole {
                 hit_horizon = true;
                 break;
             }
-            
-            if (r > max(3000.0, length(camPos) * 2.0)) {
+            //reduced to 1000 for better performance
+            if (r > max(1000.0, length(camPos) * 2.0)) {
                 ray_escaped = true;
                 break;
             }
