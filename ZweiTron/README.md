@@ -131,13 +131,21 @@ neutron-star/
 Requires CMake 3.14+ and a C++17 compiler. raylib is fetched automatically:
 
 ```bash
-cd neutron-star
+cd ZweiTron
 cmake -B build
 cmake --build build
 ./build/tov_sim
 ```
 
 ---
+## Downloads
+
+Prebuilt binaries: **[Releases page →](https://github.com/toiabzahoor/physics-sims/releases)**
+
+| Platform | Arch | Tested OS | Notes |
+|---|---|---|---|
+| Windows | x64 | Windows 10 | ✅ Tested most thoroughly — this is the reference build |
+
 
 ## Summary
 
