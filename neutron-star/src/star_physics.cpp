@@ -8,7 +8,7 @@
 StarPhysics::StarPhysics() {
     spin_angle = 0.0f;
     accretion_angle = 0.0f;
-    spin_rate = 800.0f; // degrees per second
+    spin_rate = 3000.0f;
     precession_angle = 0.0f;
     precession_rate = 45.0f;
     nutation_angle = 0.2f;
@@ -22,7 +22,7 @@ void StarPhysics::update(float dt) {
         if (spin_angle >= 360.0f) spin_angle -= 360.0f;
         
         // The accretion disk spins slower than the star itself
-        accretion_angle += (spin_rate * 0.15f) * dt;
+        accretion_angle += (spin_rate * 0.85f) * dt;
         if (accretion_angle >= 360.0f) accretion_angle -= 360.0f;
 
         precession_angle += precession_rate * dt;
@@ -71,7 +71,7 @@ void StarPhysics::update_hydrostatic_equilibrium(double &density, double &radius
 
     double M_initial = (4.0 / 3.0) * M_PI * std::pow(r, 3) * (epsilon_c / c2);
     double P_initial = P_c - (2.0 * M_PI * G / (3.0 * c4)) * 
-                       (epsilon_c + P_c) * (3.0 * P_c + epsilon_c) * std::pow(r, 2);
+                        (epsilon_c + P_c) * (3.0 * P_c + epsilon_c) * std::pow(r, 2);
     
     std::vector<double> y = {P_initial, M_initial};
     

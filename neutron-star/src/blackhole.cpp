@@ -5,7 +5,6 @@
 #include <algorithm>
 
 namespace BlackHole {
-
     const char* bh_shader_code = R"(
     #version 330
     
@@ -41,7 +40,7 @@ namespace BlackHole {
         float val = 0.0;
         float amp = 0.5;
         float freq = 1.0;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             val += amp * smooth_noise(p * freq);
             freq *= 2.0;
             amp *= 0.5;
@@ -74,20 +73,20 @@ namespace BlackHole {
         float inner = 2.5;
         float outer = 14.0;
         if (r < inner || r > outer) return vec3(0.0);
-         
+        
         // Smooth radial profile: peaks near inner edge, falls off
         float normalized_r = (r - inner) / (outer - inner);
         float density = exp(-normalized_r * 3.0) * 2.5;
         density = min(density, 3.5);
         
         // Smooth spiral arms
-        float spiral = sin(angle * 3.0 - r * 2.5 + time_val * 1.2) * 0.15 + 0.85;
+        float spiral = sin(angle * 3.0 - r * 2.5 + time_val * 8.0) * 0.15 + 0.85;
         
         // Very smooth turbulence (low frequency only)
-        vec2 turb_uv = pos * 0.2 + vec2(time_val * 0.05, 0.0);
-        float turb = smooth_noise(turb_uv) * 0.15 + 0.85;
+        vec2 turb_uv = pos * 0.8 + vec2(time_val * 2.0, 0.0);
+        float turb = fbm(turb_uv) * 0.5 + 0.5;
         
-        density *= spiral * turb;
+        density *= spiral * turb * 2.5;
         density = max(density, 0.0);
         
         // Temperature: white-hot at inner edge, cooling outward
@@ -121,7 +120,7 @@ namespace BlackHole {
         bool hit_horizon = false;
         bool ray_escaped = false;
         
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 800; i++) {
             float r = length(p);
             float r_over_rs = r / max(rs, 0.001);
             
@@ -139,7 +138,7 @@ namespace BlackHole {
                 break;
             }
             
-            float dt = max(r * 0.03, 0.03);
+            float dt = max(r * 0.015, 0.01);
             
             // Check for disk intersection along this step
             float t_disk = intersect_disk_plane(p, v, 0.0, dt);
@@ -154,18 +153,18 @@ namespace BlackHole {
                     if (length(disk_col) > 0.001) {
                         // Smooth orbital velocity for doppler
                         vec3 orbital_dir = normalize(vec3(-hit_pos.z, 0.0, hit_pos.x));
-                        float orbital_speed = 0.45 / sqrt(max(hit_r / 2.5, 1.0));
+                        float beta = sqrt(1.0 / max(2.0 * hit_r - 3.0, 0.1));
                         
                         // Doppler beaming: approaching side gets brighter and bluer
                         float cos_angle = dot(orbital_dir, normalize(-v));
-                        float beaming = 1.0 + cos_angle * orbital_speed * 2.5;
-                        beaming = max(beaming, 0.3);
+                        float gamma = 1.0 / sqrt(1.0 - beta * beta);
+                        float doppler = 1.0 / (gamma * (1.0 - beta * cos_angle));
+                        float beaming = pow(doppler, 3.0);
                         
                         // Gravitational redshift near horizon
-                        float redshift = 1.0 / max(1.0 - 1.5 / hit_r, 0.3);
-                        redshift = clamp(redshift, 0.5, 2.0);
+                        float redshift = sqrt(max(1.0 - 1.5 / hit_r, 0.01));
                         
-                        vec3 final_hit = disk_col * beaming / redshift;
+                        vec3 final_hit = disk_col * beaming * redshift;
                         
                         // Accumulate
                         float alpha = min(length(final_hit) * 0.4, 1.0);
@@ -178,7 +177,8 @@ namespace BlackHole {
             }
             
             // Gravity step
-            vec3 gravity = -p * (0.8 * rs / max(r * r * r, 0.0001));
+            vec3 h = cross(p, v);
+            vec3 gravity = -p * (1.5 * rs * dot(h, h) / max(pow(r, 5.0), 0.0001));
             v = normalize(v + gravity * dt);
             p += v * dt;
         }
@@ -186,10 +186,10 @@ namespace BlackHole {
         if (hit_horizon) {
             // Bright photon ring at ~1.5 Rs
             float photon_ring = exp(-abs(min_r_over_rs - 1.5) * 80.0);
-            vec3 ring_glow = vec3(1.0, 0.9, 0.7) * photon_ring * 1.2;
+            vec3 ring_glow = vec3(1.0, 0.9, 0.7) * photon_ring * 2.0;
             
             // Inner glow
-            vec3 inner_glow = vec3(1.0, 0.7, 0.3) * exp(-min_r_over_rs * 4.0) * 0.2;
+            vec3 inner_glow = vec3(1.0, 0.7, 0.3) * exp(-min_r_over_rs * 4.0) * 0.4;
             
             finalColor = vec4(ring_glow + inner_glow, 1.0);
             return;
@@ -257,11 +257,12 @@ namespace BlackHole {
             float thickness = 0.01f + (p.distance * 0.015f);
             p.y_offset = ((float)GetRandomValue(-100, 100) / 100.0f) * thickness;
             
-            p.base_speed = 0.6f / sqrt(p.distance); 
-            p.size = (float)GetRandomValue(2, 6) / 10.0f; 
+            p.base_speed = 2.5f / sqrt(p.distance); 
+            p.size = (float)GetRandomValue(1, 4) / 10.0f; 
             
             particles.push_back(p);
         }
+
         is_initialized = true;
     }
 
