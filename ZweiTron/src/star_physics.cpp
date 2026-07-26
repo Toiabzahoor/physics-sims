@@ -55,8 +55,8 @@ Vector3 StarPhysics::get_rotation_axis() const {
     };
 }
 
-void StarPhysics::update_hydrostatic_equilibrium(double &density, double &radius) {
-    PolytropicEoS eos(100.0, 2.0); 
+void StarPhysics::update_hydrostatic_equilibrium(double &density, double &radius, double &mass) {
+    PolytropicEoS eos(0.03, 2.0); 
     TOVSystem tov(eos);
 
     double P_c = eos.returnPressure(density * Constants::rho_nuc_si);
@@ -80,6 +80,7 @@ void StarPhysics::update_hydrostatic_equilibrium(double &density, double &radius
     };
 
     double P_prev = y[0];
+    double M_prev = y[1];
     double r_prev = r;
     
     int max_steps = 100000; 
@@ -87,6 +88,7 @@ void StarPhysics::update_hydrostatic_equilibrium(double &density, double &radius
 
     while (y[0] > 0.0 && step_count < max_steps) {
         P_prev = y[0];
+        M_prev = y[1];
         r_prev = r;
         
         y = RK4::step(r, y, dr, derivs);
@@ -95,10 +97,14 @@ void StarPhysics::update_hydrostatic_equilibrium(double &density, double &radius
     }
 
     double exact_radius = r;
+    double exact_mass = y[1];
     if (y[0] < 0.0) {
         double fraction = P_prev / (P_prev - y[0]);
         exact_radius = r_prev + fraction * dr;
+        // Linear interpolation for mass at the surface as well
+        exact_mass = M_prev + fraction * (y[1] - M_prev);
     }
 
     radius = exact_radius / Constants::km_to_m;
+    mass = exact_mass / Constants::M_sun;
 }

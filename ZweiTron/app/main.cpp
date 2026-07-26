@@ -79,8 +79,8 @@ int main() {
                 if (density < 0.1) density = 0.1;
             }
 
-            mass = 1.4 * density;
-            radius = 12.0 / (1.0 + (density - 1.0) * 0.2);
+            // Solve the TOV equations via RK4 to get physically accurate radius and mass
+            physics.update_hydrostatic_equilibrium(density, radius, mass);
             is_black_hole = BlackHole::is_collapsed(mass);
 
             if (IsKeyPressed(KEY_ESCAPE)) {

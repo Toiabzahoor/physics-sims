@@ -23,5 +23,5 @@ public:
     float get_accretion_angle() const;
     Vector3 get_rotation_axis() const;
 
-    void update_hydrostatic_equilibrium(double &density, double &radius);
+    void update_hydrostatic_equilibrium(double &density, double &radius, double &mass);
 };
