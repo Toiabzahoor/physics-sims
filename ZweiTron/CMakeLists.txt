@@ -27,5 +27,5 @@ add_executable(ZweiTron
 target_link_libraries(ZweiTron PRIVATE raylib)
 
 if(WIN32)
-    target_link_option(ZweiTron PRIVATE -static -static-libgcc -static-libstdc++)
+    target_link_options(ZweiTron PRIVATE -static -static-libgcc -static-libstdc++)
 endif()
