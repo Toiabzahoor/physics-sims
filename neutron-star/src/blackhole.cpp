@@ -17,40 +17,207 @@ namespace BlackHole {
     uniform vec3 camUp;
     uniform vec3 camRight;
     uniform float rs;
+    uniform float time;
+    
+    // Smooth noise functions
+    float hash(vec2 p) {
+        p = fract(p * vec2(234.34, 435.345));
+        p += dot(p, p + 19.19);
+        return fract(p.x * p.y);
+    }
+    
+    float smooth_noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        float a = hash(i);
+        float b = hash(i + vec2(1.0, 0.0));
+        float c = hash(i + vec2(0.0, 1.0));
+        float d = hash(i + vec2(1.0, 1.0));
+        return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+    }
+    
+    float fbm(vec2 p) {
+        float val = 0.0;
+        float amp = 0.5;
+        float freq = 1.0;
+        for (int i = 0; i < 3; i++) {
+            val += amp * smooth_noise(p * freq);
+            freq *= 2.0;
+            amp *= 0.5;
+        }
+        return val;
+    }
+    
+    // Temperature-based color: white-hot inner, orange mid, red outer
+    vec3 disk_color(float temperature) {
+        float t = clamp(temperature, 0.0, 1.0);
+        vec3 cool = vec3(0.6, 0.1, 0.02);
+        vec3 warm = vec3(1.0, 0.6, 0.1);
+        vec3 hot = vec3(1.0, 0.95, 0.8);
+        vec3 very_hot = vec3(1.0, 1.0, 1.0);
+        
+        if (t < 0.33) {
+            return mix(cool, warm, t / 0.33);
+        } else if (t < 0.66) {
+            return mix(warm, hot, (t - 0.33) / 0.33);
+        } else {
+            return mix(hot, very_hot, (t - 0.66) / 0.34);
+        }
+    }
+    
+    // Smooth accretion disk sampling
+    vec3 sample_disk(vec2 pos, float time_val) {
+        float r = length(pos);
+        float angle = atan(pos.y, pos.x);
+        
+        float inner = 2.5;
+        float outer = 14.0;
+        if (r < inner || r > outer) return vec3(0.0);
+         
+        // Smooth radial profile: peaks near inner edge, falls off
+        float normalized_r = (r - inner) / (outer - inner);
+        float density = exp(-normalized_r * 3.0) * 2.5;
+        density = min(density, 3.5);
+        
+        // Smooth spiral arms
+        float spiral = sin(angle * 3.0 - r * 2.5 + time_val * 1.2) * 0.15 + 0.85;
+        
+        // Very smooth turbulence (low frequency only)
+        vec2 turb_uv = pos * 0.2 + vec2(time_val * 0.05, 0.0);
+        float turb = smooth_noise(turb_uv) * 0.15 + 0.85;
+        
+        density *= spiral * turb;
+        density = max(density, 0.0);
+        
+        // Temperature: white-hot at inner edge, cooling outward
+        float temp = pow(inner / max(r, inner), 0.9);
+        temp = clamp(temp, 0.0, 1.0);
+        
+        vec3 color = disk_color(temp) * density * (0.6 + temp * 0.4);
+        return color;
+    }
+    
+    // Ray-plane intersection for disk
+    float intersect_disk_plane(vec3 ro, vec3 rd, float t_min, float t_max) {
+        if (abs(rd.y) < 1e-6) return -1.0;
+        float t = -ro.y / rd.y;
+        if (t < t_min || t > t_max) return -1.0;
+        return t;
+    }
     
     void main() {
         vec2 uv = (gl_FragCoord.xy / resolution.xy - 0.5) * 2.0;
         uv.x *= resolution.x / resolution.y;
-        uv *= 0.41421356; 
+        uv *= 0.41421356;
         
         vec3 rayDir = normalize(camDir + camRight * uv.x + camUp * uv.y);
         vec3 p = camPos;
         vec3 v = rayDir;
         
-        for (int i = 0; i < 400; i++) {
+        vec3 accretion_color = vec3(0.0);
+        float accretion_alpha = 0.0;
+        float min_r_over_rs = 1e10;
+        bool hit_horizon = false;
+        bool ray_escaped = false;
+        
+        for (int i = 0; i < 500; i++) {
             float r = length(p);
+            float r_over_rs = r / max(rs, 0.001);
+            
+            if (r_over_rs < min_r_over_rs) {
+                min_r_over_rs = r_over_rs;
+            }
             
             if (r <= rs) {
-                finalColor = vec4(0.0, 0.0, 0.0, 1.0);
-                return;
-            }
-            if (r > max(2000.0, length(camPos) * 1.5)) {
+                hit_horizon = true;
                 break;
             }
             
-            float dt = max(r * 0.05, 0.05);
-            vec3 gravity = -p * (0.8 * rs / max(r * r * r, 0.001));
+            if (r > max(3000.0, length(camPos) * 2.0)) {
+                ray_escaped = true;
+                break;
+            }
+            
+            float dt = max(r * 0.03, 0.03);
+            
+            // Check for disk intersection along this step
+            float t_disk = intersect_disk_plane(p, v, 0.0, dt);
+            if (t_disk > 0.0) {
+                vec3 hit_pos = p + v * t_disk;
+                float hit_r = length(hit_pos.xz) / max(rs, 0.001);
+                
+                if (hit_r > 2.0 && hit_r < 15.0) {
+                    vec2 disk_uv = hit_pos.xz / max(rs, 0.001);
+                    vec3 disk_col = sample_disk(disk_uv, time);
+                    
+                    if (length(disk_col) > 0.001) {
+                        // Smooth orbital velocity for doppler
+                        vec3 orbital_dir = normalize(vec3(-hit_pos.z, 0.0, hit_pos.x));
+                        float orbital_speed = 0.45 / sqrt(max(hit_r / 2.5, 1.0));
+                        
+                        // Doppler beaming: approaching side gets brighter and bluer
+                        float cos_angle = dot(orbital_dir, normalize(-v));
+                        float beaming = 1.0 + cos_angle * orbital_speed * 2.5;
+                        beaming = max(beaming, 0.3);
+                        
+                        // Gravitational redshift near horizon
+                        float redshift = 1.0 / max(1.0 - 1.5 / hit_r, 0.3);
+                        redshift = clamp(redshift, 0.5, 2.0);
+                        
+                        vec3 final_hit = disk_col * beaming / redshift;
+                        
+                        // Accumulate
+                        float alpha = min(length(final_hit) * 0.4, 1.0);
+                        accretion_color += final_hit * (1.0 - accretion_alpha);
+                        accretion_alpha += alpha * (1.0 - accretion_alpha);
+                        
+                        if (accretion_alpha > 0.95) break;
+                    }
+                }
+            }
+            
+            // Gravity step
+            vec3 gravity = -p * (0.8 * rs / max(r * r * r, 0.0001));
             v = normalize(v + gravity * dt);
             p += v * dt;
         }
         
+        if (hit_horizon) {
+            // Bright photon ring at ~1.5 Rs
+            float photon_ring = exp(-abs(min_r_over_rs - 1.5) * 80.0);
+            vec3 ring_glow = vec3(1.0, 0.9, 0.7) * photon_ring * 1.2;
+            
+            // Inner glow
+            vec3 inner_glow = vec3(1.0, 0.7, 0.3) * exp(-min_r_over_rs * 4.0) * 0.2;
+            
+            finalColor = vec4(ring_glow + inner_glow, 1.0);
+            return;
+        }
+        
+        // Background: subtle starfield
         vec2 st = gl_FragCoord.xy / resolution.xy;
-        float star = fract(sin(dot(st, vec2(12.9898, 78.233))) * 43758.5453);
-        if (star > 0.998) {
-            float intensity = (star - 0.998) * 500.0;
-            finalColor = vec4(vec3(intensity), 1.0);
+        float star_seed = hash(st * 100.0);
+        vec3 bg = vec3(0.003, 0.003, 0.005);
+        
+        if (star_seed > 0.997) {
+            float intensity = (star_seed - 0.997) * 333.0;
+            float color_variation = hash(st * 200.0 + 1.0);
+            bg = vec3(intensity) * (0.7 + 0.3 * color_variation);
+        }
+        
+        // Subtle galaxy band
+        float band = sin(st.y * 12.0 + st.x * 4.0) * 0.5 + 0.5;
+        band *= sin(st.x * 7.0 - st.y * 5.0) * 0.5 + 0.5;
+        band = pow(band, 3.0) * 0.01;
+        bg += vec3(0.08, 0.06, 0.12) * band;
+        
+        // Blend accretion disk over background
+        if (accretion_alpha > 0.01) {
+            vec3 final_accretion = accretion_color / max(accretion_alpha, 0.01);
+            finalColor = vec4(mix(bg, final_accretion, min(accretion_alpha, 0.85)), 1.0);
         } else {
-            finalColor = vec4(0.01, 0.01, 0.02, 1.0);
+            finalColor = vec4(bg, 1.0);
         }
     }
     )";
@@ -135,6 +302,9 @@ namespace BlackHole {
 
         for (const auto& p : particles) {
             float actual_r = p.distance * horizon_radius;
+            
+            // Skip particles inside or too close to event horizon
+            if (p.distance < 1.1f) continue;
             
             Vector3 pos = {
                 actual_r * cos(p.angle),

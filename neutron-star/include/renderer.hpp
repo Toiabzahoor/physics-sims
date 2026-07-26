@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include "star_physics.hpp"
 #include "jets.hpp"
+#include "blackhole.hpp"
 
 class StarRenderer {
 private:
@@ -22,6 +23,10 @@ private:
     int viewPosLoc, poleAxisLoc, massLoc, radiusLoc, nsTimeLoc;
 
     PolarJets jets;
+
+    BlackHole::Visuals bh_visuals;
+    float animated_rs;
+    float disk_alpha;
 
     void draw_neutron_star(double mass, const StarPhysics& physics);
     void draw_shader_background(float rs);

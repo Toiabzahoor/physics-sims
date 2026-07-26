@@ -12,7 +12,7 @@ in vec2 fragTexCoord;
 in vec3 fragNormal;
 in vec3 fragPosition;
 
-out vec4 final Color;
+out vec4 finalColor;
 
 uniform sampler2D texture0;
 uniform vec3 viewPos;
@@ -22,8 +22,8 @@ uniform float radius;
 uniform float time;
 
 void main() {
-    vec3 normal = normalize(fragNormal)
-    vec3 viewDir = normalize(viewPos - fragPosition)
+    vec3 normal = normalize(fragNormal);
+    vec3 viewDir = normalize(viewPos - fragPosition);
 
     vec4 texelColor = texture(texture0, fragTexCoord);
 
@@ -32,7 +32,7 @@ void main() {
 
     vec3 baseColor = texelColor.rgb * vec3(1.0, 0.6, 0.2);
     float redshift = mass / 2.1;
-    baseColor = mix(baseColor, Vec3(0.8,0.1,0.0), redshift * (1.0 - edgeDarkening));
+    baseColor = mix(baseColor, vec3(0.8,0.1,0.0), redshift * (1.0 - edgeDarkening));
 
     float poleDot = abs(dot(normal,normalize(poleAxis)));
     float hotspot = pow(poleDot,8.0) * (1.0 + 0.2 * sin(time * 10.0));
@@ -59,6 +59,8 @@ StarRenderer::StarRenderer(int width, int height, const char* title) {
     cameraAngleY = 0.35f;
 
     animated_radius = 0.0f;
+    animated_rs = 0.0f;
+    disk_alpha = 0.0f;
     
     Image noise = GenImagePerlinNoise(512,512,0,0,8.0f);
     ImageColorTint(&noise, (Color){220,220,255,255});
@@ -217,11 +219,11 @@ void StarRenderer::draw_ui(double density, double radius, double mass, bool is_b
 }
 
 void StarRenderer::render_frame(double density_multiplier, double target_radius, double mass_solar, bool is_black_hole, const StarPhysics& physics) {
-    static BlackHole::Visuals bh_visuals;
-    static float animated_rs = 0.0f;
-    static float disk_alpha = 0.0f;
-    
-    if (animated_radius == 0.0f && !is_black_hole) animated_radius = target_radius;
+    if (animated_radius == 0.0f && !is_black_hole) {
+        animated_radius = target_radius;
+        animated_rs = 0.0f;
+        disk_alpha = 0.0f;
+    }
 
     double core_mass = mass_solar * 0.80;
     float target_rs = (float)BlackHole::get_schwarzschild_radius(core_mass);
@@ -251,16 +253,15 @@ void StarRenderer::render_frame(double density_multiplier, double target_radius,
 
     BeginMode3D(camera);
     
-    // We allow the neutron star to naturally shrink to 0 instead of instantly hiding it
     if (animated_radius > 0.1f) {
         draw_neutron_star(mass_solar, physics);
     }
     
-    // The jets will naturally fade out as disk_alpha reaches 1.0
     jets.draw(camera, 1.0f - disk_alpha);
     
-    if (disk_alpha > 0.01f) {
-        bh_visuals.draw(animated_rs, camera, disk_alpha);
+    if (disk_alpha > 0.01f && disk_alpha < 0.5f) {
+        float particle_alpha = 1.0f - disk_alpha * 2.0f;
+        bh_visuals.draw(animated_rs, camera, particle_alpha);
     }
     
     EndMode3D();
