@@ -201,15 +201,17 @@ void StarRenderer::draw_shader_background(float rs) {
 }
 
 void StarRenderer::draw_ui(double density, double radius, double mass, bool is_black_hole, const StarPhysics& physics) {
-    DrawRectangle(10, 10, 480, 150, Fade(BLACK, 0.8f));
+    DrawRectangle(10, 10, 600, 170, Fade(BLACK, 0.8f));
     DrawText("Controls: Arrow Keys to Rotate | Scroll to Zoom | SPACE to Pause", 20, 20, 10, LIGHTGRAY);
     DrawText("Physics: W / S keys for central density", 20, 35, 10, LIGHTGRAY);
     
     DrawText(TextFormat("Central Density: %.2fx Nuclear", density), 20, 60, 20, WHITE);
     
     if (is_black_hole) {
-        DrawText(TextFormat("Schwarzschild Radius: %.2f km", radius), 20, 90, 20, GRAY);
-        DrawText(TextFormat("Mass: %.2f M_sun", mass), 20, 120, 20, DARKGRAY);
+        double schwarzschild_radius = BlackHole::get_schwarzschild_radius(mass);
+        DrawText(TextFormat("Schwarzschild Radius: %.2f km  (from BH formula)", schwarzschild_radius), 20, 90, 20, RED);
+        DrawText(TextFormat("Last Star Radius (TOV): %.2f km  (for comparison)", radius), 20, 115, 16, GRAY);
+        DrawText(TextFormat("Mass: %.2f M_sun", mass), 20, 140, 20, DARKGRAY);
     } else {
         DrawText(TextFormat("Star Radius: %.2f km", radius), 20, 90, 20, SKYBLUE);
         DrawText(TextFormat("Star Mass: %.2f M_sun", mass), 20, 120, 20, ORANGE);
@@ -225,8 +227,7 @@ void StarRenderer::render_frame(double density_multiplier, double target_radius,
         disk_alpha = 0.0f;
     }
 
-    double core_mass = mass_solar * 0.80;
-    float target_rs = (float)BlackHole::get_schwarzschild_radius(core_mass);
+    float target_rs = (float)BlackHole::get_schwarzschild_radius(mass_solar);
 
     if (!physics.is_paused()) {
         if (is_black_hole) {
