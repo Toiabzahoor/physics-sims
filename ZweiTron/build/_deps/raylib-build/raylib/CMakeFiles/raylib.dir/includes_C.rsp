@@ -1,1 +1,0 @@
--I"/workspaces/physics-sims/neutron-star/include" -I"/workspaces/physics-sims/neutron-star/build/_deps/raylib-src/src" -isystem "/workspaces/physics-sims/neutron-star/build/_deps/raylib-src/src/external/glfw/include"
