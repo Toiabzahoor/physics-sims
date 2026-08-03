@@ -1,158 +1,61 @@
-# Astrophysics Simulator: Neutron Stars → Black Holes
-
-An interactive real-time simulation that lets you **dial up the density of a star** and watch it transform from a normal star into a rapidly spinning neutron star, then collapse past the TOV limit into a black hole with an accretion disk.
-
-Built with C++ and raylib (OpenGL 3.3+), with general relativity baked into both the physics solver and the visual rendering.
-
+# Astrophysics Simulator
+Hey there! I am Toiab Zahoor, and this is my project ZweiTron. ZweiTron is an interactive neutron star and black hole simulator I made using C++ and raylib. It is highly optimized so that it can run on low-end laptops or PCs. Initially, my idea was only to make a neutron star simulation. But, a neutron star isn't that cool to look at because most of the stuff happening is subatomic, so I decided to add in a black hole simulator as well. Both are modeled by real equations, and I have tried my best to be as faithful to the physics as possible. Here is how I made it:
 ---
-
-## What You Can Do
-
-Press **W** and **S** to increase or decrease the central density of the star (in units of nuclear saturation density — that's ~2.8×10¹⁴ g/cm³). The simulation solves the full general relativistic structure equations in real time and updates the visuals accordingly.
-
-- **Low density**: A normal-ish star
-- **~1× nuclear density**: A typical neutron star — ~1.4 solar masses, ~12 km radius, spinning at millisecond periods, with relativistic polar jets
-- **Above ~1.5× nuclear density** (mass > 2.1 M☉): Gravitational collapse — the star shrinks, the Schwarzschild radius appears, and the scene transitions to a black hole with a glowing accretion disk
-
+## How It Works
+So here is what you can actually do in ZweiTron. You use the **W** and **S** keys to dial the central density of the star up or down. Because the engine solves the real general relativistic structure equations on the spot, it updates what you see in real time.
+Depending on how high you push the density, you get to see three main stages:
+*   **Low density:** It just looks like a normal star.
+*   **~1x nuclear density:** It turns into a typical neutron star. It spins super fast and shoots out these relativistic polar jets.
+*   **Above ~1.5x nuclear density:** This is where you cross the mass limit (greater than 2.1 solar masses). Gravity completely wins out, the star shrinks, the Schwarzschild radius is reached, and it collapses right into a black hole surrounded by a glowing accretion disk.
 ---
-
 ## The Physics, Explained
-
-### 1. The TOV Equations (How Stars Hold Themselves Up)
-
-Inside any star, gravity pulls inward and pressure pushes outward. In general relativity, this balance is described by the **Tolman–Oppenheimer–Volkoff (TOV) equations**:
-
-```
-dP/dr = - (G / c²) × (energy_density + pressure) × (mass + 4πr³ × pressure / c²) / (r² × (1 - 2GM / (rc²)))
-dM/dr = 4πr² × energy_density / c²
-```
-
-The first equation says: the pressure gradient depends on three things — how much mass-energy is inside (gravity's source), the pressure itself (which also gravitates in GR!), and a **metric correction** term `(1 - 2GM/rc²)` that accounts for how spacetime curvature amplifies gravity. This correction is what makes neutron stars different from Newtonian stars — as you approach the Schwarzschild radius, this term goes to zero, and the pressure gradient blows up.
-
-The code integrates these equations outward from the center using a **4th-order Runge-Kutta** method, stepping until the pressure drops to zero (the star's surface). The initial conditions near r=0 use a Taylor expansion to avoid the coordinate singularity.
-
-### 2. The Equation of State (What Neutron Star Matter Is Like)
-
-To solve the TOV equations, you need a relationship between pressure, density, and energy — the **equation of state (EoS)**. This is the big unknown in neutron star physics.
-
-This simulation uses a **piecewise polytropic EoS**:
-
-- **Crust** (outer layers, lower density): `P = K_crust × ρ^Γ_crust` — simulates the solid crystalline lattice of neutron-rich nuclei embedded in a relativistic electron gas
-- **Core** (inner region, higher density): `P = K_core × ρ^Γ_core` — simulates uniform nuclear matter dominated by neutron degeneracy pressure
-
-The two regimes are stitched together at a transition density with **continuous enthalpy** — this prevents a thermodynamic discontinuity that would otherwise violate the first law of thermodynamics (the code comments this as "fixed a thermodynamics violation").
-
-The energy density used in the TOV equations includes:
-```
-ε = ρc² + P / (Γ - 1)
-```
-This is rest-mass energy plus internal energy from compression, related through the adiabatic index Γ.
-
-### 3. The TOV Limit (~2.1 M☉)
-
-Neutron degeneracy pressure can only support so much mass. Beyond about **2.1 solar masses**, no stable neutron star solution exists — gravity overwhelms the strong nuclear force and degeneracy pressure. This is the **Tolman–Oppenheimer–Volkoff limit**, hard-coded as the collapse threshold.
-
-When the user pushes past this limit, the simulation triggers a black hole transition.
-
-### 4. Black Hole Physics
-
-The black hole is rendered with a **full-screen GLSL shader that ray-marches through curved spacetime**:
-
-**Ray tracing**: For each pixel, a ray is cast from the camera. At each step, the ray is deflected by a pseudo-relativistic gravity term:
-```
-acceleration = -1.5 × R_s × |angular_momentum|² / r⁵ × r_hat
-```
-This reproduces the correct **photon sphere at 1.5 R_s** — the radius where light orbits in a circle around the black hole.
-
-**The black hole shadow**: Rays that pass within ~1.5 R_s get bent into the event horizon and never return, creating the dark central shadow. Rays that graze the photon sphere produce a bright ring (the "photon ring"), which is rendered as a Gaussian peak at 1.5 R_s.
-
-**The accretion disk**: When a ray intersects the equatorial plane (y=0), it samples a procedurally generated disk with:
-- **Temperature gradient**: White-hot near the inner edge (~2.5 R_s, just outside the ISCO at 3 R_s), cooling to red at the outer edge (14 R_s)
-- **Doppler beaming**: Material orbiting at relativistic speeds appears brighter when moving toward the observer. The boost follows δ³ where δ is the relativistic Doppler factor
-- **Gravitational redshift**: Light loses energy climbing out of the black hole's gravity well, shifting toward red by a factor sqrt(1 - 1.5/r)
-- **Spiral density waves**: Three-armed spiral pattern from instabilities in the disk
-
-**Particle disk**: 30,000 individual particles supplement the shader disk, showing Keplerian orbits (v ∝ 1/√r) with particles plunging inward inside 2 R_s (the plunge region beyond the ISCO).
-
-### 5. Neutron Star Visuals
-
-The neutron star surface is rendered with a custom shader that simulates:
-
-- **Limb darkening**: The star appears dimmer near its edge because we're seeing through more tenuous outer layers at grazing angles
-- **Gravitational redshift**: As mass approaches the TOV limit, the surface color shifts to red — the light is losing energy climbing out of a deeper gravitational well
-- **Magnetic hotspots**: Bright bluish-white spots at the magnetic poles (aligned with the rotation axis), pulsing at 10× the spin frequency — simulating pulsar emission where charged particles are accelerated along magnetic field lines and emit X-rays/radio
-
-Three additive glow layers pulse at different frequencies to simulate the magnetosphere and atmospheric scattering.
-
-### 6. Relativistic Jets
-
-When in neutron star mode, **bipolar polar jets** shoot out along the rotation axis at ~0.6c (simulated):
-
-- **Collimation**: A pinch force squeezes particles toward the axis, mimicking magnetic field confinement
-- **Doppler beaming**: Approaching jet appears brighter (δ^1.2 boost), receding jet dimmer
-- **Color**: Inner core is white-hot, outer sheath is blue — simulating temperature stratification in the jet
-
+### 1. The TOV Equations (How it doesn't collapse immediately)
+Inside any star, you have gravity pulling inward and pressure pushing outward. Because we are dealing with extreme mass, Newtonian physics doesn't work well, so I used the Tolman-Oppenheimer-Volkoff (TOV) equations.
+Basically, this tells us that the pressure gradient depends on mass-energy, the pressure itself, and a metric correction term that handles the curvature of spacetime. To actually simulate this, the code solves these equations outward from the center of the star using a 4th-order Runge-Kutta integrator, stopping when the pressure hits zero (which is the surface).
+### 2. The Equation of State 
+To make the TOV equations work, you need to define how pressure and density relate to each other—the Equation of State (EoS). I went with a piecewise polytropic EoS:
+*   **Crust:** Simulates a solid lattice of neutron-rich nuclei in the outer layers.
+*   **Core:** Simulates uniform nuclear matter deeper inside.
+I also stitched these two parts together with continuous enthalpy to make sure it doesn't violate the laws of thermodynamics I encountered without doing that.
+### 3. The TOV Limit
+Neutron degeneracy pressure can only hold up so much mass. Once you dial it past ~2.1 solar masses, TOV stops working. Gravity completely overwhelms the strong nuclear force. This is the TOV limit, and in the simulation, it's the exact threshold that triggers the collapse into a black hole.
+### 4. Black Hole Rendering (Curved Spacetime in a Shader)
+Once the star collapses, the rendering switches over to a full-screen GLSL shader that actually ray-marches through curved spacetime.
+*   **Ray Tracing Gravity:** For every pixel, a ray gets cast from the camera, and its path gets bent by a pseudo-relativistic gravity term. This creates a realistic photon sphere at exactly 1.5 Schwarzschild radii (R_s)—the exact spot where light orbits in a circle.
+*   **The Shadow & Photon Ring:** Rays that pass too close get swallowed by the event horizon, creating the black hole's shadow. Rays that just graze the photon sphere get bent around and form a super bright photon ring.
+*   **The Accretion Disk:** The disk around the black hole is procedurally generated with a temperature gradient (white-hot near the inner edge, cooling to red on the outside). It includes gravitational redshift (light losing energy as it climbs out of the gravity well) and Doppler beaming (material moving toward you at relativistic speeds looks way brighter).
+*   **Particle System:** To make it pop, I also added 30,000 individual particles on top of the shader to show Keplerian orbits, which actually plunge inward once they cross the innermost stable circular orbit (ISCO). (Although I faced many issues and now this is mostly a vestigial thing)
+### 5. Neutron Star Visuals & Jets
+For the neutron star itself, I wrote a custom shader to handle some cool relativistic effects:
+*   **Limb Darkening & Redshift:** The edges of the star look dimmer, and as you increase the mass towards the TOV limit, the whole star visibly shifts to red because the light struggles more to escape the gravity well.
+*   **Pulsar Hotspots:** There are bright bluish-white magnetic hotspots at the poles that pulse at 10x the spin frequency to simulate X-ray/radio emission. (Although I didn't work much because my laptop has integrated graphics and basically it would lag a lot if I went into detail.)
+*   **Relativistic Jets:** When it's spinning fast, it shoots out bipolar jets at around 0.6c (just an approximation due to the low-end nature). They use a pinch force to simulate magnetic collimation, and just like the accretion disk, they use Doppler beaming so the jet pointing towards you is noticeably brighter than the one pointing away.
 ---
-
 ## Controls
 
-| Key | Action |
-|-----|--------|
-| W / S | Increase / decrease central density |
-| Arrow keys | Rotate camera |
-| Mouse drag | Orbit camera |
-| Scroll | Zoom in/out |
-| Space | Pause / unpause |
-| Escape | Return to menu |
+| Key / Action | Result |
+| :--- | :--- |
+| **W / S** | Increase or decrease the central density of the star |
+| **Arrow keys / Mouse drag** | Orbit and rotate the camera |
+| **Scroll wheel** | Zoom in and out |
+| **Spacebar** | Pause or unpause the physics |
+| **Escape** | Head back to the main menu |
 
 ---
-
-## Project Structure
-
-```
-neutron-star/
-├── app/main.cpp          — Application loop, menu, user input
-├── src/
-│   ├── tov.cpp           — TOV equations (general relativistic hydrostatic equilibrium)
-│   ├── eos.cpp           — Equations of state (polytropic + piecewise)
-│   ├── rk4.cpp           — 4th-order Runge-Kutta integrator
-│   ├── star_physics.cpp  — Star rotation, precession, TOV solver caller
-│   ├── blackhole.cpp     — Black hole shader and accretion disk particles
-│   ├── jets.cpp          — Relativistic polar jet particle system
-│   └── renderer.cpp      — 3D rendering, shader management, UI
-├── include/              — Headers
-└── CMakeLists.txt        — Build system (auto-fetches raylib 5.0)
-```
-
+## Code Structure
+If you want to poke around the source code, here is how I laid it out:
+*   `app/main.cpp` - The main application loop and menu.
+*   `src/tov.cpp` & `src/eos.cpp` - The heavy physics lifting (general relativistic equations and the equations of state).
+*   `src/rk4.cpp` - The 4th-order Runge-Kutta math integrator.
+*   `src/blackhole.cpp` & `src/jets.cpp` - The shaders and particle systems for the black hole and relativistic jets.
+*   `src/renderer.cpp` - Handles all the 3D rendering and UI.
 ---
-
-## Build
-
-Requires CMake 3.14+ and a C++17 compiler. raylib is fetched automatically:
-
+## How to Build It
+ZweiTron is super easy to compile. You just need CMake (3.14+) and a C++17 compiler. The build system automatically fetches raylib 5.0 for you, so you don't have to worry about linking dependencies manually.
+Just run these commands in your terminal:
 ```bash
-cd ZweiTron
 cmake -B build
 cmake --build build
-./build/tov_sim
+./build/ZweiTron
 ```
-
----
-## Downloads
-
-Prebuilt binaries: **[Releases page →](https://github.com/toiabzahoor/physics-sims/releases)**
-
-| Platform | Arch | Tested OS | Notes |
-|---|---|---|---|
-| Windows | x64 | Windows 10 | ✅ Tested most thoroughly — this is the reference build |
-
-
-## Summary
-
-This simulation puts together **three layers of physics** that normally live in separate domains:
-
-1. **Stellar structure**: Real-time integration of the TOV equations with a realistic nuclear EoS
-2. **Black hole visualization**: Ray-traced curved spacetime with Doppler beaming, gravitational redshift, and a photon ring
-3. **Neutron star phenomenology**: Pulsar hotspots, relativistic jets, and the density-driven collapse transition
-
-The result is that you can *feel* the physics — see the star red-shift as it approaches the TOV limit, watch the accretion disk flicker with Doppler-boosted particles, and observe the moment gravity wins.
+thanks for checking out!!
